@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 class Share(models.Model):
@@ -19,3 +22,42 @@ class Share(models.Model):
     class Meta:
         verbose_name = "Акция"
         verbose_name_plural = "Акции"
+
+
+class Watchlist(models.Model):
+    """Список наблюдения акций пользователя"""
+
+    TARGET_TYPE_CHOICES = [
+        ('above', 'Выше'),
+        ('below', 'Ниже'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    share = models.ForeignKey(Share, on_delete=models.CASCADE, verbose_name="Акция")
+    target_price = models.FloatField(verbose_name="Целевая цена")
+    target_type = models.CharField(
+        max_length=10,
+        choices=TARGET_TYPE_CHOICES,
+        verbose_name="Условие"
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Активно")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+
+    class Meta:
+        verbose_name = "Список наблюдения"
+        verbose_name_plural = "Списки наблюдения"
+        unique_together = ['user', 'share']
+
+
+class WatchlistNotification(models.Model):
+    """Уведомления о достижении целевой цены"""
+
+    watchlist = models.ForeignKey(Watchlist, on_delete=models.CASCADE, verbose_name="Список наблюдения")
+    triggered_price = models.FloatField(verbose_name="Цена срабатывания")
+    triggered_at = models.DateTimeField(auto_now_add=True, verbose_name="Время срабатывания")
+    is_read = models.BooleanField(default=False, verbose_name="Прочитано")
+
+    class Meta:
+        verbose_name = "Уведомление"
+        verbose_name_plural = "Уведомления"

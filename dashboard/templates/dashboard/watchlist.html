@@ -1,0 +1,53 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+    <title>Список наблюдения</title>
+{% endblock %}
+
+{% block content %}
+    <h2>Список наблюдения</h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'dashboard:watchlist_create' %}" class="btn btn-primary">Добавить акцию</a>
+        <a href="{% url 'dashboard:notifications' %}" class="btn btn-info">Уведомления</a>
+    </div>
+
+    {% if watchlist_items %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Тикер</th>
+                <th scope="col">Название</th>
+                <th scope="col">Текущая цена</th>
+                <th scope="col">Целевая цена</th>
+                <th scope="col">Условие</th>
+                <th scope="col">Управление</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in watchlist_items %}
+                <tr>
+                    <td><a href="{% url 'dashboard:detail' item.share.id %}">{{ item.share.ticker }}</a></td>
+                    <td>{{ item.share.name }}</td>
+                    <td>{{ item.share.last_price }} {{ item.share.currency }}</td>
+                    <td>{{ item.target_price }} {{ item.share.currency }}</td>
+                    <td>
+                        {% if item.target_type == 'above' %}
+                            <span class="badge badge-success">Выше</span>
+                        {% else %}
+                            <span class="badge badge-warning">Ниже</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'dashboard:watchlist_delete' item.id %}" class="btn btn-danger btn-sm">
+                            Удалить
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Список наблюдения пуст. Добавьте акции для отслеживания.</p>
+    {% endif %}
+{% endblock %}

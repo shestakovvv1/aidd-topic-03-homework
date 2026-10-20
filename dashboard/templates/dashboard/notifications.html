@@ -1,0 +1,53 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}
+    <title>Уведомления</title>
+{% endblock %}
+
+{% block content %}
+    <h2>Уведомления</h2>
+    
+    <div class="mb-3">
+        <a href="{% url 'dashboard:watchlist' %}" class="btn btn-primary">Список наблюдения</a>
+    </div>
+
+    {% if notifications %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Акция</th>
+                <th scope="col">Цена срабатывания</th>
+                <th scope="col">Время</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Действие</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for notification in notifications %}
+                <tr {% if not notification.is_read %}style="font-weight: bold;"{% endif %}>
+                    <td><a href="{% url 'dashboard:detail' notification.watchlist.share.id %}">{{ notification.watchlist.share.name }} ({{ notification.watchlist.share.ticker }})</a></td>
+                    <td>{{ notification.triggered_price }} {{ notification.watchlist.share.currency }}</td>
+                    <td>{{ notification.triggered_at|date:"d.m.Y H:i:s" }}</td>
+                    <td>
+                        {% if notification.is_read %}
+                            <span class="badge badge-secondary">Прочитано</span>
+                        {% else %}
+                            <span class="badge badge-primary">Новое</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not notification.is_read %}
+                            <form method="post" action="{% url 'dashboard:notification_mark_read' notification.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-primary">Пометить прочитанным</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Уведомлений нет.</p>
+    {% endif %}
+{% endblock %}
