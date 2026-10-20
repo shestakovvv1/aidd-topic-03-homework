@@ -3,12 +3,11 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = ""
+SECRET_KEY = "django-insecure-dev-key-investing-demo-local-only-change-me"
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "testserver"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -89,17 +88,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "investing",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "localhost",
-        "PORT": "5432",
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
@@ -118,7 +109,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -131,14 +121,21 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGIN_URL = "user:auth"
+LOGIN_REDIRECT_URL = "dashboard:index"
+
+MESSAGE_TAGS = {
+    40: "danger",  # messages.ERROR
+}
+
 TINKOFF_TOKEN = ""
 
-"""Celery Configuration Options"""
+# Celery — отключено для локального запуска без Redis/Docker
 CELERY_TIMEZONE = "Europe/Moscow"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-# CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672'
-CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
-
-"""Debug Celery"""
-CELERY_TASK_ALWAYS_EAGER = False
+# CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_BROKER_URL = "memory://"
+CELERY_RESULT_BACKEND = "cache+memory://"
+CELERY_TASK_ALWAYS_EAGER = True
+CELERY_TASK_EAGER_PROPAGATES = True

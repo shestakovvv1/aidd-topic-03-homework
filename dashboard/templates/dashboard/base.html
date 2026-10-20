@@ -31,6 +31,9 @@
     <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
         <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
             <li><a href="{% url 'dashboard:index' %}" class="nav-link px-2 link-secondary">Главная</a></li>
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'dashboard:portfolio_list' %}" class="nav-link px-2 link-secondary">Портфели</a></li>
+            {% endif %}
         </ul>
 
         <div class="col-md-3 text-end">
@@ -48,6 +51,11 @@
 
 <main class="flex-shrink-0">
     <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
 
         {% block content %}
         {% endblock %}
@@ -60,6 +68,9 @@
     <div class="container">
         <ul class="nav justify-content-center border-bottom pb-3 mb-3">
             <li class="nav-item"><a href="{% url 'dashboard:index' %}" class="nav-link px-2 text-muted">Главная</a></li>
+            {% if user.is_authenticated %}
+            <li class="nav-item"><a href="{% url 'dashboard:portfolio_list' %}" class="nav-link px-2 text-muted">Портфели</a></li>
+            {% endif %}
         </ul>
         <p class="text-center text-muted">Investing</p>
     </div>

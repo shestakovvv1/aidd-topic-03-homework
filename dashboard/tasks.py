@@ -12,14 +12,10 @@ def update_last_price():
         try:
             [last_price, detetime] = get_last_data(share)
 
-            try:
-                if share.last_price > last_price:
-                    is_trend_high = False
-                else:
-                    is_trend_high = True
-            except Exception as e:
-                logger.error(e)
+            if share.last_price is None:
                 is_trend_high = True
+            else:
+                is_trend_high = last_price >= share.last_price
 
             Share.objects.filter(id=share.id).update(
                 last_price=last_price, is_trend_high=is_trend_high
